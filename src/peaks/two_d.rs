@@ -30,9 +30,9 @@ pub fn find_peak<T: Ord + Clone>(input: &[&[T]]) -> Option<(usize, usize)> {
             None => return panic!("failed to find max in row {}", mid),
             Some(j) => {
                 let ref x = row[j];
-                if mid != 0 && &input[mid - 1][j] > x {
+                if mid > min && &input[mid - 1][j] > x {
                     max = mid - 1;
-                } else if mid != n - 1 && &input[mid + 1][j] > x {
+                } else if mid < max && &input[mid + 1][j] > x {
                     min = mid + 1;
                 } else {
                     return Some((mid, j))
