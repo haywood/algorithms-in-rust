@@ -1,2 +1,4 @@
-#![feature(collections, core, slice_patterns)]
+#![feature(collections, core)]
+
 pub mod change;
+pub mod peaks;

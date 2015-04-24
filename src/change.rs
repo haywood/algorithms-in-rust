@@ -1,5 +1,3 @@
-use std::collections::HashSet;
-
 pub fn make_change(amount: i64, coins: &[i64]) -> Vec<i64> {
     if amount > 0 {
         let mut change = make_change_impl(amount, coins);
@@ -25,23 +23,23 @@ pub fn ways_to_make_change(amount: i64, coins: &[i64]) -> Vec<Vec<i64>> {
 
 fn make_change_impl(amount: i64, coins: &[i64]) -> Vec<i64> {
     assert!(amount > 0);
-    match coins {
-        [] => vec![],
-        [x, ..] => {
-            match amount - x {
-                r if r < 0 => {
-                    make_change_impl(amount, &coins[1..])
-                },
-                r if r > 0 => {
-                    let mut change = make_change_impl(r, coins);
-                    if !change.is_empty() {
-                        change.push(x);
-                    }
-                    change
-                },
-                _ => {
-                    vec![x]
+    if coins.is_empty() {
+        vec![]
+    } else {
+        let x = coins[0];
+        match amount - x {
+            r if r < 0 => {
+                make_change_impl(amount, &coins[1..])
+            },
+            r if r > 0 => {
+                let mut change = make_change_impl(r, coins);
+                if !change.is_empty() {
+                    change.push(x);
                 }
+                change
+            },
+            _ => {
+                vec![x]
             }
         }
     }
@@ -49,27 +47,27 @@ fn make_change_impl(amount: i64, coins: &[i64]) -> Vec<i64> {
 
 fn ways_to_make_change_impl(amount: i64, coins: &[i64]) -> Vec<Vec<i64>> {
     assert!(amount > 0);
-    match coins {
-        [] => vec![],
-        [x, ..] => {
-            match amount - x {
-                r if r < 0 => {
-                    ways_to_make_change_impl(amount, &coins[1..])
-                },
-                r => {
-                    let mut ways = if r > 0 {
-                        let mut tmp = vec![];
-                        for mut way in ways_to_make_change_impl(r, coins) {
-                            way.push(x);
-                            tmp.push(way);
-                        }
-                        tmp
-                    } else {
-                        vec![vec![x]]
-                    };
-                    ways.append(&mut ways_to_make_change_impl(amount, &coins[1..]));
-                    ways
-                }
+    if coins.is_empty() {
+        vec![]
+    } else {
+        let x = coins[0];
+        match amount - x {
+            r if r < 0 => {
+                ways_to_make_change_impl(amount, &coins[1..])
+            },
+            r => {
+                let mut ways = if r > 0 {
+                    let mut tmp = vec![];
+                    for mut way in ways_to_make_change_impl(r, coins) {
+                        way.push(x);
+                        tmp.push(way);
+                    }
+                    tmp
+                } else {
+                    vec![vec![x]]
+                };
+                ways.append(&mut ways_to_make_change_impl(amount, &coins[1..]));
+                ways
             }
         }
     }
@@ -80,7 +78,7 @@ macro_rules! assert_ways {
         {
             let ways = ways_to_make_change($amount, &$coins);
             assert_eq!(ways.len(), $count);
-            let mut unique_ways = HashSet::new();
+            let mut unique_ways = ::std::collections::HashSet::new();
             for w in ways {
                 assert_eq!(w.iter().sum::<i64>(), $amount);
                 unique_ways.insert(w);
