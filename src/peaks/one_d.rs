@@ -52,6 +52,8 @@ macro_rules! test {
         #[test]
         fn $name() {
             assert_eq!($algo(&Vec::<i64>::new()), None);
+            test_is_peak!($algo, &[2, 1, 4, 1, 1]);
+            test_is_peak!($algo, &[2, 1, 6, 5, 48902, 109, 1, 1]);
             test_is_peak!($algo, &[1, 1, 1, 1]);
             test_is_peak!($algo, &[1, 2, 3, 4]);
             test_is_peak!($algo, &[1, 2, 1, 4]);
