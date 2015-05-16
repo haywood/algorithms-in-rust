@@ -25,19 +25,21 @@ pub fn find_peak<T: Ord + Clone>(input: &[&[T]]) -> Option<(usize, usize)> {
     loop {
         let mid = (min + max) / 2;
         let row = input[mid];
-        match (0..m).max_by(|k| &row[*k]) {
-            // should never happen, since rows must be non-empty
-            None => return panic!("failed to find max in row {}", mid),
-            Some(j) => {
-                let ref x = row[j];
-                if mid > min && &input[mid - 1][j] > x {
-                    max = mid - 1;
-                } else if mid < max && &input[mid + 1][j] > x {
-                    min = mid + 1;
-                } else {
-                    return Some((mid, j))
-                }
+        let mut max_j = 0;
+        let mut max_t = &row[max_j];
+        for tmp_j in 0..m {
+            let tmp_t = &row[tmp_j];
+            if tmp_t > max_t {
+                max_t = tmp_t;
+                max_j = tmp_j;
             }
+        }
+        if mid > min && &input[mid - 1][max_j] > max_t {
+            max = mid - 1;
+        } else if mid < max && &input[mid + 1][max_j] > max_t {
+            min = mid + 1;
+        } else {
+            return Some((mid, max_j))
         }
     }
 }
@@ -55,14 +57,21 @@ pub fn find_peak_greedy<T: Ord + Clone>(input: &[&[T]]) -> Option<(usize, usize)
         if j != 0 { candidates.push((i, j - 1)); }
         if i < n - 1 { candidates.push((i + 1, j)); }
         if j < m - 1 { candidates.push((i, j + 1)); }
-        match candidates.iter().max_by(|&&(k, l)| &input[k][l]) {
-            None => return None,
-            Some(& (max_i, max_j)) => if input[max_i][max_j] > input[i][j] {
-                i = max_i;
-                j = max_j;
-            } else {
-                return Some((i, j))
+        let (mut max_i, mut max_j) = candidates[0];
+        let mut max_t = &input[max_i][max_j];
+        for &(tmp_i, tmp_j) in candidates.iter() {
+            let tmp_t = &input[tmp_i][tmp_j];
+            if tmp_t > max_t {
+                max_t = tmp_t;
+                max_i = tmp_i;
+                max_j = tmp_j;
             }
+        }
+        if max_t > &input[i][j] {
+            i = max_i;
+            j = max_j;
+        } else {
+            return Some((i, j))
         }
     }
 }

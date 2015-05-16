@@ -66,8 +66,13 @@ fn ways_to_make_change_impl(amount: i64, coins: &[i64]) -> Vec<Vec<i64>> {
                 } else {
                     vec![vec![x]]
                 };
-                ways.append(&mut ways_to_make_change_impl(amount, &coins[1..]));
-                ways
+                let mut tmp = ways_to_make_change_impl(amount, &coins[1..]);
+                loop {
+                    match tmp.pop() {
+                        None => return ways,
+                        Some(way) => ways.push(way)
+                    }
+                }
             }
         }
     }
@@ -80,7 +85,11 @@ macro_rules! assert_ways {
             assert_eq!(ways.len(), $count);
             let mut unique_ways = ::std::collections::HashSet::new();
             for w in ways {
-                assert_eq!(w.iter().sum::<i64>(), $amount);
+                let mut sum = 0;
+                for coin in w.iter() {
+                    sum += *coin;
+                }
+                assert_eq!(sum, $amount);
                 unique_ways.insert(w);
             }
             assert_eq!(unique_ways.len(), $count);
